@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace MatiasPili1216.ExpectedConditionsTools
 {
-    public class ExpectedConditionsForWebElement<T> where T : IWebElement
+    public class ExpectedConditionsForWebElement
     {
         /// <summary>
         /// An expectation for checking that an element is present on the DOM of a
@@ -14,10 +14,7 @@ namespace MatiasPili1216.ExpectedConditionsTools
         /// </summary>
         /// <param name="locator">The locator used to find the element.</param>
         /// <returns>The <see cref="IWebElement"/> once it is located.</returns>
-        public static Func<T, IWebElement> ElementExists(By locator)
-        {
-            return (t) => { return t.FindElement(locator); };
-        }
+        public static Func<IWebElement, IWebElement> ElementExists(By locator) => (element) => { return element.FindElement(locator); };
 
         /// <summary>
         /// An expectation for checking that an element is present on the DOM of a page
@@ -26,13 +23,13 @@ namespace MatiasPili1216.ExpectedConditionsTools
         /// </summary>
         /// <param name="locator">The locator used to find the element.</param>
         /// <returns>The <see cref="IWebElement"/> once it is located and visible.</returns>
-        public static Func<T, IWebElement> ElementIsVisible(By locator)
+        public static Func<IWebElement, IWebElement> ElementIsVisible(By locator)
         {
-            return (t) =>
+            return (element) =>
             {
                 try
                 {
-                    return ElementIfVisible(t.FindElement(locator));
+                    return ElementIfVisible(element.FindElement(locator));
                 }
                 catch (StaleElementReferenceException)
                 {
@@ -48,14 +45,14 @@ namespace MatiasPili1216.ExpectedConditionsTools
         /// </summary>
         /// <param name="locator">The locator used to find the element.</param>
         /// <returns>The list of <see cref="IWebElement"/> once it is located and visible.</returns>
-        public static Func<T, ReadOnlyCollection<IWebElement>> VisibilityOfAllElementsLocatedBy(By locator)
+        public static Func<IWebElement, ReadOnlyCollection<IWebElement>> VisibilityOfAllElementsLocatedBy(By locator)
         {
-            return (t) =>
+            return (element) =>
             {
                 try
                 {
-                    var elements = t.FindElements(locator);
-                    return elements.Any(element => !element.Displayed) ? null : elements.Any() ? elements : null;
+                    var elements = element.FindElements(locator);
+                    return elements.Any(e => !e.Displayed) ? null : elements.Any() ? elements : null;
                 }
                 catch (StaleElementReferenceException)
                 {
@@ -71,13 +68,13 @@ namespace MatiasPili1216.ExpectedConditionsTools
         /// </summary>
         /// <param name="elements">list of WebElements</param>
         /// <returns>The list of <see cref="IWebElement"/> once it is located and visible.</returns>
-        public static Func<T, ReadOnlyCollection<IWebElement>> VisibilityOfAllElementsLocatedBy(ReadOnlyCollection<IWebElement> elements)
+        public static Func<IWebElement, ReadOnlyCollection<IWebElement>> VisibilityOfAllElementsLocatedBy(ReadOnlyCollection<IWebElement> elements)
         {
-            return (t) =>
+            return (element) =>
             {
                 try
                 {
-                    return elements.Any(element => !element.Displayed) ? null : elements.Any() ? elements : null;
+                    return elements.Any(e => !e.Displayed) ? null : elements.Any() ? elements : null;
                 }
                 catch (StaleElementReferenceException)
                 {
@@ -92,13 +89,13 @@ namespace MatiasPili1216.ExpectedConditionsTools
         /// </summary>
         /// <param name="locator">The locator used to find the element.</param>
         /// <returns>The list of <see cref="IWebElement"/> once it is located.</returns>
-        public static Func<T, ReadOnlyCollection<IWebElement>> PresenceOfAllElementsLocatedBy(By locator)
+        public static Func<IWebElement, ReadOnlyCollection<IWebElement>> PresenceOfAllElementsLocatedBy(By locator)
         {
-            return (t) =>
+            return (element) =>
             {
                 try
                 {
-                    var elements = t.FindElements(locator);
+                    var elements = element.FindElements(locator);
                     return elements.Any() ? elements : null;
                 }
                 catch (StaleElementReferenceException)
@@ -114,9 +111,9 @@ namespace MatiasPili1216.ExpectedConditionsTools
         /// <param name="element">The WebElement</param>
         /// <param name="text">Text to be present in the element</param>
         /// <returns><see langword="true"/> once the element contains the given text; otherwise, <see langword="false"/>.</returns>
-        public static Func<T, bool> TextToBePresentInElement(IWebElement element, string text)
+        public static Func<IWebElement, bool> TextToBePresentInElement(IWebElement element, string text)
         {
-            return (t) =>
+            return (element) =>
             {
                 try
                 {
@@ -136,14 +133,13 @@ namespace MatiasPili1216.ExpectedConditionsTools
         /// <param name="locator">The locator used to find the element.</param>
         /// <param name="text">Text to be present in the element</param>
         /// <returns><see langword="true"/> once the element contains the given text; otherwise, <see langword="false"/>.</returns>
-        public static Func<T, bool> TextToBePresentInElementLocated(By locator, string text)
+        public static Func<IWebElement, bool> TextToBePresentInElementLocated(By locator, string text)
         {
-            return (t) =>
+            return (element) =>
             {
                 try
                 {
-                    var element = t.FindElement(locator);
-                    var elementText = element.Text;
+                    var elementText = element.FindElement(locator)?.Text;
                     return elementText.Contains(text);
                 }
                 catch (StaleElementReferenceException)
@@ -159,9 +155,9 @@ namespace MatiasPili1216.ExpectedConditionsTools
         /// <param name="element">The WebElement</param>
         /// <param name="text">Text to be present in the element</param>
         /// <returns><see langword="true"/> once the element contains the given text; otherwise, <see langword="false"/>.</returns>
-        public static Func<T, bool> TextToBePresentInElementValue(IWebElement element, string text)
+        public static Func<IWebElement, bool> TextToBePresentInElementValue(IWebElement element, string text)
         {
-            return (t) =>
+            return (element) =>
             {
                 try
                 {
@@ -181,22 +177,14 @@ namespace MatiasPili1216.ExpectedConditionsTools
         /// <param name="locator">The locator used to find the element.</param>
         /// <param name="text">Text to be present in the element</param>
         /// <returns><see langword="true"/> once the element contains the given text; otherwise, <see langword="false"/>.</returns>
-        public static Func<T, bool> TextToBePresentInElementValue(By locator, string text)
+        public static Func<IWebElement, bool> TextToBePresentInElementValue(By locator, string text)
         {
-            return (t) =>
+            return (element) =>
             {
                 try
                 {
-                    var element = t.FindElement(locator);
-                    var elementValue = element.GetAttribute("value");
-                    if (elementValue != null)
-                    {
-                        return elementValue.Contains(text);
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    var elementValue = element.FindElement(locator)?.GetAttribute("value");
+                    return elementValue != null && elementValue.Contains(text);
                 }
                 catch (StaleElementReferenceException)
                 {
@@ -210,14 +198,13 @@ namespace MatiasPili1216.ExpectedConditionsTools
         /// </summary>
         /// <param name="locator">The locator used to find the element.</param>
         /// <returns><see langword="true"/> if the element is not displayed; otherwise, <see langword="false"/>.</returns>
-        public static Func<T, bool> InvisibilityOfElementLocated(By locator)
+        public static Func<IWebElement, bool> InvisibilityOfElementLocated(By locator)
         {
-            return (t) =>
+            return (element) =>
             {
                 try
                 {
-                    var element = t.FindElement(locator);
-                    return !element.Displayed;
+                    return !(element.FindElement(locator).Displayed);
                 }
 
                 catch (StaleElementReferenceException)
@@ -235,14 +222,13 @@ namespace MatiasPili1216.ExpectedConditionsTools
         /// <param name="locator">The locator used to find the element.</param>
         /// <param name="text">Text of the element</param>
         /// <returns><see langword="true"/> if the element is not displayed; otherwise, <see langword="false"/>.</returns>
-        public static Func<T, bool> InvisibilityOfElementWithText(By locator, string text)
+        public static Func<IWebElement, bool> InvisibilityOfElementWithText(By locator, string text)
         {
-            return (t) =>
+            return (element) =>
             {
                 try
                 {
-                    var element = t.FindElement(locator);
-                    var elementText = element.Text;
+                    var elementText = element.FindElement(locator)?.Text;
                     return string.IsNullOrEmpty(elementText) || !elementText.Equals(text);
                 }
                 catch (NoSuchElementException)
@@ -266,14 +252,14 @@ namespace MatiasPili1216.ExpectedConditionsTools
         /// </summary>
         /// <param name="locator">The locator used to find the element.</param>
         /// <returns>The <see cref="IWebElement"/> once it is located and clickable (visible and enabled).</returns>
-        public static Func<T, IWebElement> ElementToBeClickable(By locator)
+        public static Func<IWebElement, IWebElement> ElementToBeClickable(By locator)
         {
-            return (t) =>
+            return (element) =>
             {
-                var element = ElementIfVisible(t.FindElement(locator));
+                var result = ElementIfVisible(element.FindElement(locator));
                 try
                 {
-                    return element != null && element.Enabled ? element : null;
+                    return result != null && result.Enabled ? result : null;
                 }
                 catch (StaleElementReferenceException)
                 {
@@ -288,9 +274,9 @@ namespace MatiasPili1216.ExpectedConditionsTools
         /// </summary>
         /// <param name="element">The element.</param>
         /// <returns>The <see cref="IWebElement"/> once it is clickable (visible and enabled).</returns>
-        public static Func<T, IWebElement> ElementToBeClickable(IWebElement element)
+        public static Func<IWebElement, IWebElement> ElementToBeClickable(IWebElement element)
         {
-            return (t) =>
+            return (element) =>
             {
                 try
                 {
@@ -308,9 +294,9 @@ namespace MatiasPili1216.ExpectedConditionsTools
         /// </summary>
         /// <param name="element">The element.</param>
         /// <returns><see langword="false"/> is the element is still attached to the DOM; otherwise, <see langword="true"/>.</returns>
-        public static Func<T, bool> StalenessOf(IWebElement element)
+        public static Func<IWebElement, bool> StalenessOf(IWebElement element)
         {
-            return (t) =>
+            return (element) =>
             {
                 try
                 {
@@ -332,9 +318,9 @@ namespace MatiasPili1216.ExpectedConditionsTools
         /// </summary>
         /// <param name="element">The element.</param>
         /// <returns><see langword="false"/> is the element is still attached to the DOM; otherwise, <see langword="true"/>.</returns>
-        public static Func<T, bool> StalenessOfVisible(IWebElement element)
+        public static Func<IWebElement, bool> StalenessOfVisible(IWebElement element)
         {
-            return (t) =>
+            return (element) =>
             {
                 try
                 {
@@ -356,7 +342,7 @@ namespace MatiasPili1216.ExpectedConditionsTools
         /// </summary>
         /// <param name="element">The element.</param>
         /// <returns><see langword="true"/> given element is selected.; otherwise, <see langword="false"/>.</returns>
-        public static Func<T, bool> ElementToBeSelected(IWebElement element)
+        public static Func<IWebElement, bool> ElementToBeSelected(IWebElement element)
         {
             return ElementToBeSelected(element, true);
         }
@@ -367,9 +353,9 @@ namespace MatiasPili1216.ExpectedConditionsTools
         /// <param name="element">The element.</param>
         /// <param name="selected">selected or not selected</param>
         /// <returns><see langword="true"/> given element is in correct state.; otherwise, <see langword="false"/>.</returns>
-        public static Func<T, bool> ElementToBeSelected(IWebElement element, bool selected)
+        public static Func<IWebElement, bool> ElementToBeSelected(IWebElement element, bool selected)
         {
-            return (t) => element.Selected == selected;
+            return (element) => element.Selected == selected;
         }
 
         /// <summary>
@@ -377,7 +363,7 @@ namespace MatiasPili1216.ExpectedConditionsTools
         /// </summary>
         /// <param name="locator">The locator used to find the element.</param>
         /// <returns><see langword="true"/> given element is selected.; otherwise, <see langword="false"/>.</returns>
-        public static Func<T, bool> ElementToBeSelected(By locator)
+        public static Func<IWebElement, bool> ElementToBeSelected(By locator)
         {
             return ElementSelectionStateToBe(locator, true);
         }
@@ -388,14 +374,13 @@ namespace MatiasPili1216.ExpectedConditionsTools
         /// <param name="locator">The locator used to find the element.</param>
         /// <param name="selected">selected or not selected</param>
         /// <returns><see langword="true"/> given element is in correct state.; otherwise, <see langword="false"/>.</returns>
-        public static Func<T, bool> ElementSelectionStateToBe(By locator, bool selected)
+        public static Func<IWebElement, bool> ElementSelectionStateToBe(By locator, bool selected)
         {
-            return (t) =>
+            return (element) =>
             {
                 try
                 {
-                    var element = t.FindElement(locator);
-                    return element.Selected == selected;
+                    return element.FindElement(locator).Selected == selected;
                 }
                 catch (StaleElementReferenceException)
                 {
