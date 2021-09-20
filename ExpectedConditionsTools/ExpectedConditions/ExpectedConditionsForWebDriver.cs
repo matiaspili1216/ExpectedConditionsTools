@@ -98,9 +98,20 @@ namespace MatiasPili1216.ExpectedConditionsTools
         /// </summary>
         /// <param name="locator">The locator used to find the element.</param>
         /// <returns>The <see cref="IWebElement"/> once it is located.</returns>
-        public static Func<IWebDriver, IWebElement> ElementExists(By locator)
+        public static Func<IWebDriver, IWebElement> FindElement(By locator)
         {
             return (driver) => { return driver.FindElement(locator); };
+        }
+
+        /// <summary>
+        /// An expectation for checking that an element is present on the DOM of a
+        /// page. This does not necessarily mean that the element is visible.
+        /// </summary>
+        /// <param name="locator">The locator used to find the element.</param>
+        /// <returns>The <see cref="IWebElement"/> once it is located.</returns>
+        public static Func<IWebDriver, ReadOnlyCollection<IWebElement>> FindElements(By locator)
+        {
+            return (driver) => { return driver.FindElements(locator); };
         }
 
         /// <summary>

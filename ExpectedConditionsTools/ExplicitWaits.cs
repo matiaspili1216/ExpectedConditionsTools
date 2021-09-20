@@ -23,5 +23,9 @@ namespace MatiasPili1216.ExpectedConditionsTools
         public static bool Wait(this IWebElement element, int timeoutInSeconds, Func<IWebElement, bool> func) => new WebElementWait(element, TimeSpan.FromSeconds(timeoutInSeconds)).Until(func);
 
         public static ReadOnlyCollection<IWebElement> Wait(this IWebElement element, int timeoutInSeconds, Func<IWebElement, ReadOnlyCollection<IWebElement>> func) => new WebElementWait(element, TimeSpan.FromSeconds(timeoutInSeconds)).Until(func);
+
+        public static IWebElement Wait(this By by, int timeoutInSeconds, Func<By, IWebElement> func) => new ByWait(by, TimeSpan.FromSeconds(timeoutInSeconds)).Until(func);
+
+        public static ReadOnlyCollection<IWebElement> Wait(this By by, int timeoutInSeconds, Func<By, ReadOnlyCollection<IWebElement>> func) => new ByWait(by, TimeSpan.FromSeconds(timeoutInSeconds)).Until(func);
     }
 }

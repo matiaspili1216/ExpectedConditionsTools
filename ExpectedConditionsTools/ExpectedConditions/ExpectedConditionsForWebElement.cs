@@ -14,7 +14,9 @@ namespace MatiasPili1216.ExpectedConditionsTools
         /// </summary>
         /// <param name="locator">The locator used to find the element.</param>
         /// <returns>The <see cref="IWebElement"/> once it is located.</returns>
-        public static Func<IWebElement, IWebElement> ElementExists(By locator) => (element) => { return element.FindElement(locator); };
+        public static Func<IWebElement, IWebElement> FindElement(By locator) => (element) => { return element.FindElement(locator); };
+
+        public static Func<IWebElement, ReadOnlyCollection<IWebElement>> FindElements(By locator) => (element) => { return element.FindElements(locator); };
 
         /// <summary>
         /// An expectation for checking that an element is present on the DOM of a page
